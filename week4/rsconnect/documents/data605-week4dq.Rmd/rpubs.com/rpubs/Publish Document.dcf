@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/421257/5c8bcd1899ea46b29d6e456bfb4544fd
+bundleId: https://api.rpubs.com/api/v1/document/421257/5c8bcd1899ea46b29d6e456bfb4544fd
+url: http://rpubs.com/bacurtin2/421257
+when: 1537313157.47574
