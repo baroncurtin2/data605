@@ -1,0 +1,35 @@
+---
+title: "Data 605 - Week6 DQ"
+author: "Baron Curtin"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(tidy = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+loadPkg <- function(x) {
+  if(!require(x, character.only = T)) install.packages(x, dependencies = T, repos = "http://cran.us.r-project.org")
+  require(x, character.only = T)
+}
+
+libs <- c("knitr", "magrittr", "data.table", "kableExtra", "tidyverse", "matlib", "combinat")
+
+lapply(libs, loadPkg)
+```
+
+## Question 1
+![](./pics/dq.png)
+
+This question is a simple combination since order does not matter for randomly choosing 5 people to form a committee
+
+```{r}
+dim(combn(10, 5))[2]
+```
