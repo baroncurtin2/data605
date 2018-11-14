@@ -1,0 +1,77 @@
+---
+title: "Data 605 - Week11 DQ"
+author: "Baron Curtin"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(tidy = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+loadPkg <- function(x) {
+  if(!require(x, character.only = T)) install.packages(x, dependencies = T, repos = "http://cran.us.r-project.org")
+  require(x, character.only = T)
+}
+
+libs <- c("knitr", "magrittr", "data.table", "kableExtra", "tidyverse", "matlib", "combinat", "leaps", "dummies")
+
+lapply(libs, loadPkg)
+```
+
+## Question 1
+
+```{r}
+data("iris")
+```
+
+Create Dummy Variables
+```{r}
+iris2 <- iris %>%
+  mutate(Species = as.factor(Species)) %>%
+  dummy.data.frame()
+```
+
+Generate Model
+```{r}
+regDiags <- regsubsets(Petal.Width ~ ., data = iris2, method = "exhaustive", nvmax = NULL, nbest = 1)
+diagSum <- summary(regDiags)
+print(diagSum)
+```
+
+
+```{r}
+# determine best fits
+plot(diagSum$cp, xlab = "Number of Variables", ylab = "Cp")
+points(which.min(diagSum$cp), diagSum$cp[which.min(diagSum$cp)], pch = 20, col = "red")
+
+# cp plot
+par(mfrow=c(1,2))
+plot(regDiags, scale = "Cp", main = "Cp")
+
+# r^2 splot
+plot(regDiags, scale = "adjr2", main = "Adjusted R^2")
+```
+
+```{r}
+model <- lm(Petal.Width ~ . - Speciesvirginica, data = iris2)
+summary(model)
+```
+
+Evaluation
+```{r}
+par(mfrow=c(2,2))
+
+plot(model)
+hist(model$residuals)
+qqnorm(model$residuals)
+qqline(model$residuals)
+```
+
+Based on all the visuals, it is clear that there are 3 clusters of data corresponding to the species. It is interesting that the model did not need the Speciesvirginica variable to be the most accurate based on Cp value. Based on the coefficients, being Setosa had the greatest impact on Petal.Width. A residual analysis confirms a roughly normal distribution.

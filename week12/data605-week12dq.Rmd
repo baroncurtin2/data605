@@ -1,0 +1,83 @@
+---
+title: "Data 605 - Week12 DQ"
+author: "Baron Curtin"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(tidy = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+loadPkg <- function(x) {
+  if(!require(x, character.only = T)) install.packages(x, dependencies = T, repos = "http://cran.us.r-project.org")
+  require(x, character.only = T)
+}
+
+libs <- c("knitr", "magrittr", "data.table", "kableExtra", "tidyverse", "matlib", "combinat", "leaps", "dummies")
+
+lapply(libs, loadPkg)
+```
+
+## Question 1
+Lets try to create a regression model that can predict college education based on a number of factors about a neighborhood in the Midwest
+
+```{r}
+data("midwest")
+```
+
+Create Dummy Variables
+```{r}
+cols <- c("state", "inmetro")
+
+midwest2 <- midwest %>%
+  select(-c("county", "PID", "category")) %>%
+  select_at(vars(-matches("pop"))) %>%
+  mutate_at(cols, as.factor) %>%
+  as.data.frame() %>%
+  dummy.data.frame(sep = ".")
+```
+
+Generate Model
+```{r}
+regDiags <- regsubsets(percollege ~ ., data = midwest2, method = "exhaustive", nvmax = NULL, nbest = 1, really.big = T)
+diagSum <- summary(regDiags)
+print(diagSum)
+```
+
+
+```{r}
+# determine best fits
+plot(diagSum$cp, xlab = "Number of Variables", ylab = "Cp")
+points(which.min(diagSum$cp), diagSum$cp[which.min(diagSum$cp)], pch = 20, col = "red")
+
+# cp plot
+par(mfrow=c(1,2))
+plot(regDiags, scale = "Cp", main = "Cp")
+
+# r^2 splot
+plot(regDiags, scale = "adjr2", main = "Adjusted R^2")
+```
+
+```{r}
+model <- lm(percollege ~ . -state.WI -inmetro.0 - inmetro.1, data = midwest2)
+summary(model)
+```
+
+Evaluation
+```{r}
+par(mfrow=c(2,2))
+
+plot(model)
+hist(model$residuals)
+qqnorm(model$residuals)
+qqline(model$residuals)
+```
+
+The diagnostics indicate that 3 variables (inmetro.0, inmetro.1, and state.WI) do not add more value to the model than they detract. As such, those three variables were left out of the model and at a ~.94 R^2, the model does a pretty good job at providing insight into whether a person was college educated or not. Analysis of the residuals does give the impression that there is significant clustering going on with the appearance of 3 distinct clusters.
