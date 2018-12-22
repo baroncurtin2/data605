@@ -1,0 +1,39 @@
+---
+title: "Data 605 - Week14 DQ"
+author: "Baron Curtin"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: true
+    theme: cayman
+    highlight: github
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(tidy = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+loadPkg <- function(x) {
+  if(!require(x, character.only = T)) install.packages(x, dependencies = T, repos = "http://cran.us.r-project.org")
+  require(x, character.only = T)
+}
+
+libs <- c("knitr", "magrittr", "data.table", "kableExtra", "tidyverse", "matlib", "combinat", "leaps", "dummies", "rootSolve")
+
+lapply(libs, loadPkg)
+```
+
+## Question 8.1.5
+![](./pics/dq.png)
+
+
+```{r}
+eight.1.5 <- function(n) {
+  return((4^n)/(factorial(n + 1)))
+}
+
+data_frame(n = 1:5, f.n = eight.1.5(n))
+```
+
